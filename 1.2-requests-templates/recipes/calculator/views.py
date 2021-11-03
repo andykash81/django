@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.http import HttpResponse
+
 
 DATA = {
     'omlet': {
@@ -18,6 +20,16 @@ DATA = {
     },
     # можете добавить свои рецепты ;)
 }
+
+
+def recipes_view(request, name_recipe):
+    recipe_ = {}
+    count_person = int(request.GET.get('servings', 1))
+    recipe_['recipe'] = DATA.get(name_recipe)
+    if recipe_['recipe'] is not None:
+        for item in recipe_['recipe']:
+            recipe_['recipe'][item] = recipe_['recipe'][item] * count_person
+    return render(request, 'calculator/index.html', recipe_)
 
 # Напишите ваш обработчик. Используйте DATA как источник данных
 # Результат - render(request, 'calculator/index.html', context)
