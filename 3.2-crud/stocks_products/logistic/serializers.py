@@ -26,12 +26,12 @@ class StockSerializer(serializers.ModelSerializer):
         positions = validated_data.pop('positions')
         stock = super().create(validated_data)
         for data in positions:
-            stocks_products_dict = {}
+            temp_dict = {}
             for key, value in data.items():
-                stocks_products_dict[key] = value
-            stocks_products = StockProduct(quantity=stocks_products_dict['quantity'],
-                                           price=stocks_products_dict['price'],
-                                           product_id=stocks_products_dict['product']['id'],
+                temp_dict[key] = value
+            stocks_products = StockProduct(quantity=temp_dict['quantity'],
+                                           price=temp_dict['price'],
+                                           product_id=temp_dict['product']['id'],
                                            stock_id=stock.pk)
             stocks_products.save()
         return stock
@@ -43,12 +43,9 @@ class StockSerializer(serializers.ModelSerializer):
             temp_dict = {}
             for key, value in data.items():
                 temp_dict[key] = value
-            stocks_products_dict = {'quantity': temp_dict['quantity'],
-                                    'price': temp_dict['price'],
-                                    'product_id': temp_dict['product']['id']
-                                    }
             StockProduct.objects.update_or_create(stock_id=stock.pk, product_id=temp_dict['product']['id'],
-                                                  defaults=stocks_products_dict)
+                                                  defaults={'quantity': temp_dict['quantity'],
+                                                            'price': temp_dict['price']})
         return stock
 
     class Meta:

@@ -24,16 +24,19 @@ class StockViewSet(ModelViewSet):
     search_fields = ["id", "address", ]
 
     def get_queryset(self):
-        queryset = super(StockViewSet, self).get_queryset()
-        product = self.request.query_params.get("products", None)
-        if product is None:
-            return queryset
-        elif product.isnumeric():
-            queryset = queryset.filter(products=product)
-            return queryset
-        else:
-            product_id = Product.objects.filter(Q(title__contains=product) |
-                                                Q(description__contains=product)).values('id').get()
-            product = str(product_id["id"])
-            queryset = Stock.objects.all().filter(products=product)
-            return queryset
+        try:
+            queryset = super(StockViewSet, self).get_queryset()
+            product = self.request.query_params.get("products", None)
+            if product is None:
+                return queryset
+            elif product.isnumeric():
+                queryset = queryset.filter(products=product)
+                return queryset
+            else:
+                product_id = Product.objects.filter(Q(title__contains=product) |
+                                                    Q(description__contains=product)).values('id').get()
+                product = str(product_id["id"])
+                queryset = Stock.objects.all().filter(products=product)
+                return queryset
+        except Product.DoesNotExist:
+            return Stock.objects.none()
