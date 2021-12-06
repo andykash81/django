@@ -23,11 +23,10 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement
         fields = ('id', 'title', 'description', 'creator',
-                  'status', 'created_at', )
+                  'status', 'created_at',)
 
     def create(self, validated_data):
         """Метод для создания"""
-
         # Простановка значения поля создатель по-умолчанию.
         # Текущий пользователь является создателем объявления
         # изменить или переопределить его через API нельзя.
@@ -39,7 +38,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
-
-        # TODO: добавьте требуемую валидацию
-
-        return data
+        count_open_title = Advertisement.objects.filter(status="OPEN").count()
+        if count_open_title >= 10:
+            raise serializers.ValidationError('Количество открытых объявлений превышает установленный лимит')
+        else:
+            return data
