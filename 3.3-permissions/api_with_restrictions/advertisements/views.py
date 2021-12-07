@@ -13,7 +13,6 @@ class AdvertisementViewSet(ModelViewSet):
     """ViewSet для объявлений."""
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
-    permission_classes = [IsAuthenticated | IsOwnerPermissions]
 
     filter_backends = [DjangoFilterBackend]
     filterset_class = AdvertisementFilter
