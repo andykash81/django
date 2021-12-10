@@ -6,14 +6,14 @@ from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CON
 @pytest.mark.django_db
 def test_course_create(api_client, courses_factory):
     """"проверка получения 1го курса (retrieve-логика)"""
-    url = reverse("courses-list")
     courses_count = 3
     courses_id = []
     for i in range(courses_count):
         course = courses_factory(name=f'Python{i}')
         courses_id.append(course.id)
-    response = api_client.get(url, {'id': courses_id[1]})
-    results = response.json()[0]
+    url = reverse("courses-detail", args=[courses_id[1]])
+    response = api_client.get(url)
+    results = response.json()
     assert response.status_code == HTTP_200_OK
     assert results.get('name') == 'Python1'
 
