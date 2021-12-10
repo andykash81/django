@@ -7,11 +7,15 @@ from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CON
 def test_course_create(api_client, courses_factory):
     """"проверка получения 1го курса (retrieve-логика)"""
     url = reverse("courses-list")
-    courses_factory(name='Python')
-    response = api_client.get(url)
+    courses_count = 3
+    courses_id = []
+    for i in range(courses_count):
+        course = courses_factory(name=f'Python{i}')
+        courses_id.append(course.id)
+    response = api_client.get(url, {'id': courses_id[1]})
     results = response.json()[0]
     assert response.status_code == HTTP_200_OK
-    assert results.get('name') == 'Python'
+    assert results.get('name') == 'Python1'
 
 
 @pytest.mark.django_db
